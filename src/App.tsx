@@ -6,8 +6,10 @@ import Modal from './Modal';
 import Card from './Card';
 import InputCard from './InputCard';
 import { db } from './firebaseConfig';
-import { collection, addDoc, doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import Cookies from 'js-cookie';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Item {
   id?: string;
@@ -32,6 +34,9 @@ const App: React.FC = () => {
         itemsList.push({ ...doc.data(), id: doc.id } as Item);
       });
       setItems(itemsList);
+      if (snapshot.docChanges().some(change => change.type === 'added')) {
+        toast.success('A new item has been added!');
+      }
     });
 
     return () => unsubscribe();
@@ -93,10 +98,11 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <ToastContainer />
       {loggedIn ? (
         <>
           <Header username={username} onLogout={handleLogout} />
-          <div className="pt-16 max-w-2xl mx-auto p-4">
+          <div className="pt-24 max-w-2xl mx-auto p-4">
             <InputCard
               description={description}
               setDescription={setDescription}
